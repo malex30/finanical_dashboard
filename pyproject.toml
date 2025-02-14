@@ -1,0 +1,11 @@
+[project]
+name = "finicial-dashboard"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "finnhub-python>=2.4.22",
+    "icecream>=2.1.4",
+    "python-dotenv>=1.0.1",
+]
