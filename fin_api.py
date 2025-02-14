@@ -42,5 +42,5 @@ stocks = {
 
 
 for company, ticker in stocks.items():
-    quote = finnhub_client.quote(ticker)
-    ic(company, quote)
+    profile = finnhub_client.company_profile2(symbol=ticker)
+    ic(company, profile)
