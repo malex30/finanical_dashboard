@@ -5,19 +5,53 @@ import psycopg2
 from icecream import ic
 from dotenv import load_dotenv
 
+# Load environment variables from .env
 load_dotenv()
 
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
+# Connect to the database
+try:
+    # conn_string = f"postgresql://postgres:{os.getenv('DB_PASSWORD')}@db.zbpqescwaxctplgpgugz.supabase.co:5432/postgres"
+    connection = psycopg2.connect(
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+        dbname=os.getenv("DB_NAME"),
+    )
+    print("Connection successful!")
+    # conn = psycopg2.connect(conn_string)
 
-# Establish the connection
-conn = psycopg2.connect(
-    host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD
-)
+    # Create a cursor to execute SQL queries
+    cursor = connection.cursor()
 
+    # Example query
+    cursor.execute("SELECT NOW();")
+    result = cursor.fetchone()
+    print("Current Time:", result)
+
+    cursor.execute("CREATE SCHEMA finnhub;")
+
+    cursor.execute(
+        """
+    CREATE TABLE
+    stocks (
+        id SERIAL PRIMARY KEY,
+        ticker VARCHAR(255) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        price DECIMAL(10,2) NOT NULL
+    )
+    """
+    )
+    cursor.execute(
+        "SELECT * FROM information_schema.columns WHERE table_name = 'stocks';"
+    )
+    # Close the cursor and connection
+    cursor.close()
+    connection.close()
+    print("Connection closed.")
+
+except Exception as e:
+    print(f"Failed to connect: {e}")
 
 finnhub_api_key = os.getenv("FINNHUB_API_KEY")
 
@@ -63,11 +97,11 @@ stocks = {
 }
 
 
-for company, ticker in stocks.items():
-    profile = finnhub_client.company_profile2(symbol=ticker)
-    ic(company, profile)
+# for company, ticker in stocks.items():
+#     profile = finnhub_client.company_profile2(symbol=ticker)
+#     ic(company, profile)
 
 
-for company, ticker in stocks.items():
-    news = finnhub_client.company_news(symbol=ticker, _from=previous_sunday, to=sunday)
-    ic(company, ticker, news)
+# for company, ticker in stocks.items():
+#     news = finnhub_client.company_news(symbol=ticker, _from=previous_sunday, to=sunday)
+#     ic(company, ticker, news)
