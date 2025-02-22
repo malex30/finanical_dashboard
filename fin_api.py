@@ -29,22 +29,46 @@ try:
     result = cursor.fetchone()
     print("Current Time:", result)
 
-    cursor.execute("CREATE SCHEMA finnhub;")
+    cursor.execute("CREATE SCHEMA IF NOT EXISTS finnhub;")
+    connection.commit()
 
     cursor.execute(
         """
-    CREATE TABLE
-    stocks (
+    CREATE TABLE IF NOT EXISTS finnhub.stock_profile (
         id SERIAL PRIMARY KEY,
-        ticker VARCHAR(255) NOT NULL,
+        country VARCHAR(255) NOT NULL,
+        currency VARCHAR(255) NOT NULL,
+        exchange VARCHAR(255) NOT NULL,
+        ipo VARCHAR(255) NOT NULL,
+        marketCapitalization DECIMAL(10,2) NOT NULL,
         name VARCHAR(255) NOT NULL,
-        price DECIMAL(10,2) NOT NULL
+        phone VARCHAR(255) NOT NULL,
+        share_outstanding DECIMAL(10,2) NOT NULL,
+        ticker VARCHAR(255) NOT NULL,
+        website VARCHAR(255) NOT NULL,
+        logo VARCHAR(255) NOT NULL
     )
     """
     )
+    connection.commit()
+
     cursor.execute(
-        "SELECT * FROM information_schema.columns WHERE table_name = 'stocks';"
+        """
+    CREATE TABLE IF NOT EXISTS finnhub.news (
+        category VARCHAR(255) NOT NULL,
+        datetime VARCHAR(255) NOT NULL,
+        headline VARCHAR(255) NOT NULL,
+        id SERIAL PRIMARY KEY,
+        image VARCHAR(255) NOT NULL,
+        related VARCHAR(255) NOT NULL,
+        source VARCHAR(255) NOT NULL,
+        summary VARCHAR(255) NOT NULL,
+        url VARCHAR(255) NOT NULL
     )
+    """
+    )
+    connection.commit()
+
     # Close the cursor and connection
     cursor.close()
     connection.close()
